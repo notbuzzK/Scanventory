@@ -1,74 +1,138 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import { 
+  View, 
+  Text, 
+  StyleSheet, 
+  SafeAreaView, 
+  Pressable, 
+  Platform, 
+  StatusBar, 
+  Alert, 
+  Modal, 
+  Button
+} from "react-native";
+import { Link, Stack, router } from "expo-router";
+import { useState, useEffect } from "react";
+import { CameraView, useCameraPermissions } from "expo-camera";
+import { checkBarcodeStatus } from "@/lib/actions/actions";
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+export default function Home() {
+  const [permission, requestPermission] = useCameraPermissions();
 
-export default function HomeScreen() {
+  if (!permission) {
+    // Camera permissions are still loading.
+    return <View />;
+  }
+
+  if (!permission.granted) {
+    // Camera permissions are not granted yet.
+    return (
+      <View style={styles.container}>
+        <Text style={styles.message}>We need your permission to show the camera</Text>
+        <Button onPress={requestPermission} title="grant permission" />
+      </View>
+    );
+  }
+
+  const handleBarcode = async (barcode: string) => {
+    checkBarcodeStatus(barcode).then((status) => {
+      if (status === 0) {
+        console.log("Barcode found in database.");
+      } else if (status === 1) {
+        console.log("Barcode not found in database.");
+      } else {
+        console.log("Error checking barcode.");
+      }
+    });
+  }
+  
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12'
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <SafeAreaView style={StyleSheet.absoluteFillObject}>
+      <Stack.Screen
+        options={{
+          title: "Scan",
+          headerShown: false,
+        }}
+      />
+      {Platform.OS === "android" ? <StatusBar hidden /> : null}
+      <CameraView
+        style={styles.camera}
+        facing="back"
+        onBarcodeScanned={(barcode) => {
+          handleBarcode(barcode.data);}}
+      />
+      
+  </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  container: {
+    flex: 1,
+    alignItems: "center",
+    backgroundColor: "white",
+    justifyContent: "space-around",
+    paddingVertical: 80,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  title: {
+    color: "white",
+    fontSize: 40,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
+  buttonStyle: {
+    color: "#0E7AFE",
+    fontSize: 20,
+    textAlign: "center",
+  },
+  camera: {
+    width: "100%",
+    height: "100%",
+    position: "absolute",
+    top: 0,
     left: 0,
-    position: 'absolute',
+    right: 0,
+    bottom: 0,
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: '#F194FF',
+  },
+  buttonClose: {
+    backgroundColor: '#2196F3',
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  message: {
+    textAlign: 'center',
+    paddingBottom: 10,
   },
 });
