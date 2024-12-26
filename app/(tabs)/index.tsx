@@ -13,10 +13,23 @@ import {
 import { Link, Stack, router } from "expo-router";
 import { useState, useEffect } from "react";
 import { CameraView, useCameraPermissions } from "expo-camera";
-import { checkBarcodeStatus } from "@/lib/actions/actions";
+import { checkBarcodeStatus } from "@/database/db";
+import { useRouter } from "expo-router";
 
 export default function Home() {
   const [permission, requestPermission] = useCameraPermissions();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [scanned, setScanned] = useState(false);
+  const [barcode, setBarcode] = useState('');
+  const [modalType, setModalType] = useState<"found" | "notFound" | undefined>(undefined);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (scanned) {
+      const timeout = setTimeout(() => setScanned(false), 2000); // Reset scanned state after 1 second
+      return () => clearTimeout(timeout);
+    }
+  }, [scanned]);
 
   if (!permission) {
     // Camera permissions are still loading.
@@ -33,18 +46,96 @@ export default function Home() {
     );
   }
 
+  const BarcodeFoundModal = () => {
+    return (
+      <Modal
+        animationType="none"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          Alert.alert('Modal has been closed.');
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>Barcode found!</Text>
+          </View>
+          <View>
+            <Pressable
+                style={[styles.button, styles.buttonClose]}
+                onPress={() => {
+                  setModalVisible(!modalVisible);
+                  router.push(`/create?barcode=${barcode}`);
+                }}>
+                <Text style={styles.textStyle}>EDIT ITEM</Text>
+              </Pressable>
+            <Pressable
+                style={[styles.button, styles.buttonClose]}
+                onPress={() => setModalVisible(!modalVisible)}>
+                <Text style={styles.textStyle}>CLOSE</Text>
+              </Pressable>
+          </View>
+        </View>
+      </Modal>
+    );
+  };
+
+  const BarcodeNotFoundModal = () => {
+    return (
+      <Modal
+        animationType="none"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          Alert.alert('Modal has been closed.');
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>Barcode not found</Text>
+          </View>
+          <View>
+            <Pressable
+                style={[styles.button, styles.buttonClose]}
+                onPress={() => {
+                  setModalVisible(!modalVisible);
+                  router.push(`/create?barcode=${barcode}`);
+                }}>
+                <Text style={styles.textStyle}>ADD AS NEW ITEM</Text>
+              </Pressable>
+            <Pressable
+                style={[styles.button, styles.buttonClose]}
+                onPress={() => setModalVisible(!modalVisible)}>
+                <Text style={styles.textStyle}>CANCEL</Text>
+              </Pressable>
+          </View>
+        </View>
+      </Modal>
+    );
+  };
+
   const handleBarcode = async (barcode: string) => {
-    checkBarcodeStatus(barcode).then((status) => {
-      if (status === 0) {
-        console.log("Barcode found in database.");
-      } else if (status === 1) {
-        console.log("Barcode not found in database.");
-      } else {
-        console.log("Error checking barcode.");
-      }
-    });
-  }
-  
+    if (!scanned) {
+      setScanned(true); // limits scan
+      setBarcode(barcode); // stores barcode
+      checkBarcodeStatus(barcode).then((status) => {
+        if (status === 0) {
+          console.log("Barcode found");
+          setModalVisible(true);
+          setModalType("found"); // Set the modal type to "found"
+        } else if (status === 1) {
+          console.log("Barcode not found");
+          setModalVisible(true);
+          setModalType("notFound"); // Set the modal type to "notFound"
+        } else {
+          console.log("Error checking barcode.");
+        }
+      });
+    }
+  };
+
   return (
     <SafeAreaView style={StyleSheet.absoluteFillObject}>
       <Stack.Screen
@@ -58,10 +149,13 @@ export default function Home() {
         style={styles.camera}
         facing="back"
         onBarcodeScanned={(barcode) => {
-          handleBarcode(barcode.data);}}
+          scanned ? undefined : handleBarcode(barcode.data);}}
       />
+
       
-  </SafeAreaView>
+      {modalType === "found" && <BarcodeFoundModal />}
+      {modalType === "notFound" && <BarcodeNotFoundModal />}
+    </SafeAreaView>
   );
 }
 
