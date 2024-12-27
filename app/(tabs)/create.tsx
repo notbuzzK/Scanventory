@@ -1,16 +1,20 @@
 import { StyleSheet, View, Text, TextInput, Button } from 'react-native';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useGlobalSearchParams, useRouter } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
-import { insertInventory } from '@/database/db';
+import { insertInventory, updateInventoryItem } from '@/database/db';
+import db from '@/database/db';
 
 export default function TabTwoScreen() {
+  const [item, setItem] = useState({});
+  const [update, setUpdate] = useState(false);
   const router = useRouter();
   const { barcode } = useGlobalSearchParams();
   const {
     control,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -21,6 +25,30 @@ export default function TabTwoScreen() {
       type: "",
     },
   });
+
+  const getItem = async (barcode: string) => {
+    try {
+      const result = await db.getFirstAsync('SELECT * FROM inventory WHERE barcode = ?', [barcode]);
+      if (result) {
+        setItem(result);
+        setValue('name', result.name);
+        setValue('description', result.description);
+        setValue('quantity', result.quantity.toString());
+        setValue('type', result.type);
+        setUpdate(true);
+      } else {
+        setUpdate(false);
+      }
+    } catch (error) {
+      console.error('Error getting item:', error);
+    }
+  }
+
+  useEffect(() => {
+    if (barcode) {
+      getItem(barcode);
+    }
+  }, [barcode]);
 
   useEffect(() => {
     reset({
@@ -34,8 +62,15 @@ export default function TabTwoScreen() {
 
   const onSubmit = (data: any) => {
     console.log(data);
-    insertInventory(data);
-    reset({ barcode: "", name: "", description: "", quantity: 0, type: "" }); 
+    if (update === false) {
+      console.log('Inserting item');
+      insertInventory(data);
+    } else {
+      console.log('Updating item');
+      updateInventoryItem(data);
+    }
+    reset({ barcode: "", name: "", description: "", quantity: 0, type: "" });
+    router.push('/inventory');
   };
 
   return (
@@ -143,7 +178,7 @@ export default function TabTwoScreen() {
       </View>
 
       <Button title="Submit" onPress={handleSubmit(onSubmit)} />
-      <Button title="Reset" onPress={() => [reset({ barcode: "", name: "", description: "", quantity: 0, type: "" }), router.push('/')]} />
+      <Button title="Cancel" onPress={() => [reset({ barcode: "", name: "", description: "", quantity: 0, type: "" }), router.push('/')]} />
     </View>
   );
 }

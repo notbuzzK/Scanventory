@@ -38,6 +38,29 @@ export const checkBarcodeStatus = async (barcode: string) => {
   }
 };
 
+export const getAllInventory = async () => {
+  try {
+    const allRows = await db.getAllAsync('SELECT * FROM inventory');
+    return allRows;
+  } catch (error) {
+    console.error("Error getting all inventory:", error);
+    return [];
+  }
+};
+
+export const updateInventoryItem = async (values: any) => {
+  try {
+    const result = await db.runAsync(`
+      UPDATE inventory SET name = ?, description = ?, quantity = ?, type = ? WHERE barcode = ?;
+    `, [values.name, values.description, values.quantity, values.type, values.barcode]);
+    console.log(result.changes);
+    console.log("Inventory updated successfully");
+    return result;
+  } catch (error) {
+    console.error("Error updating inventory:", error);
+  }
+}
+
 export const insertInventory = async (values: any) => {
   try {
     const result = await db.runAsync(`
@@ -51,13 +74,15 @@ export const insertInventory = async (values: any) => {
   }
 }
 
-export const getAllInventory = async () => {
+export const deleteInventoryItem = async (barcode: string) => {
   try {
-    const allRows = await db.getAllAsync('SELECT * FROM inventory');
-    for (const row of allRows) {
-      console.log("Barcode:", row.barcode, "Name:", row.name, "Description:", row.description, "Quantity:", row.quantity, "Type:", row.type);
-    }
+    const result = await db.runAsync(`
+      DELETE FROM inventory WHERE barcode = ?;
+    `, [barcode]);
+    console.log(result.changes);
+    console.log("Inventory deleted successfully");
+    return result;
   } catch (error) {
-    console.error("Error getting all inventory:", error);
+    console.error("Error deleting inventory:", error);
   }
 }

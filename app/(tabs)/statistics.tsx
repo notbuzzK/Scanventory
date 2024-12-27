@@ -1,4 +1,4 @@
-import { View, Text } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 
 export default function Statistics() {
   return (
@@ -9,7 +9,13 @@ export default function Statistics() {
         alignItems: 'center',
       }}
     >
-      <Text>Statistics</Text>
+      <Text style={style.title}>Statistics</Text>
     </View>
   );
 }
+
+const style = StyleSheet.create({
+  title: {
+    color: 'white',
+  }
+})
