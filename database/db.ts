@@ -86,3 +86,27 @@ export const deleteInventoryItem = async (barcode: string) => {
     console.error("Error deleting inventory:", error);
   }
 }
+
+export const getAllItemAmounts = async () => {
+  try {
+    const allRows = await db.getAllAsync(`
+      SELECT COUNT(*) as total FROM inventory;
+    `);
+    return allRows[0].total;
+  } catch (error) {
+    console.error("Error getting all item amounts:", error);
+    return 0;
+  }
+};
+
+export const getAllTypes = async () => {
+  try {
+    const allRows = await db.getAllAsync(`
+      SELECT COUNT(DISTINCT type) as total FROM inventory;
+    `);
+    return allRows[0].total;
+  } catch (error) {
+    console.error("Error getting all types:", error);
+    return [];
+  }
+};

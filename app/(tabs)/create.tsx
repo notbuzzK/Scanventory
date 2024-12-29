@@ -1,9 +1,10 @@
-import { StyleSheet, View, Text, TextInput, Button } from 'react-native';
+import { StyleSheet, View, Text, TextInput, Button, Pressable } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useGlobalSearchParams, useRouter } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
 import { insertInventory, updateInventoryItem } from '@/database/db';
 import db from '@/database/db';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function TabTwoScreen() {
   const [item, setItem] = useState({});
@@ -74,10 +75,11 @@ export default function TabTwoScreen() {
   };
 
   return (
-    <View>
+    <View style={styles.container}>
       <View>
+        <Text style={styles.title}>Item Information</Text>
         <View>
-          <Text style={styles.item}>Barcode</Text>
+          <Text style={styles.item}>Barcode:</Text>
           <Controller
             control={control}
             rules={{
@@ -93,11 +95,11 @@ export default function TabTwoScreen() {
             )}
             name="barcode"
           />
-          {errors.barcode && <Text>This is required.</Text>}
+          {errors.barcode && <Text style={styles.error}>This is required.</Text>}
         </View>
 
         <View>
-          <Text style={styles.item}>Name</Text>
+          <Text style={styles.item}>Name:</Text>
           <Controller
             control={control}
             rules={{
@@ -113,11 +115,11 @@ export default function TabTwoScreen() {
             )}
             name="name"
           />
-          {errors.name && <Text>This is required.</Text>}
+          {errors.name && <Text style={styles.error}>This is required.</Text>}
         </View>
 
         <View>
-          <Text style={styles.item}>Description</Text>
+          <Text style={styles.item}>Description:</Text>
           <Controller
             control={control}
             rules={{
@@ -137,7 +139,7 @@ export default function TabTwoScreen() {
         </View>
 
         <View>
-          <Text style={styles.item}>Quantity</Text>
+          <Text style={styles.item}>Quantity:</Text>
           <Controller
             control={control}
             rules={{
@@ -154,11 +156,11 @@ export default function TabTwoScreen() {
             )}
             name="quantity"
           />
-          {errors.quantity && <Text>This is required.</Text>}
+          {errors.quantity && <Text style={styles.error}>This is required.</Text>}
         </View>
 
         <View>
-          <Text style={styles.item}>Type</Text>
+          <Text style={styles.item}>Type:</Text>
           <Controller
             control={control}
             rules={{
@@ -177,8 +179,25 @@ export default function TabTwoScreen() {
         </View>
       </View>
 
-      <Button title="Submit" onPress={handleSubmit(onSubmit)} />
-      <Button title="Cancel" onPress={() => [reset({ barcode: "", name: "", description: "", quantity: 0, type: "" }), router.push('/')]} />
+      <View style={styles.buttonContainer}>
+        <Pressable
+          style={styles.button}
+          onPress={() => [reset({ barcode: "", name: "", description: "", quantity: 0, type: "" }), router.push('/')]}
+          >
+          <Text style={{ color: 'white' }}>Cancel</Text>
+        </Pressable>
+        <Pressable onPress={handleSubmit(onSubmit)}>
+          <LinearGradient
+            start={{ x: 0, y: 0.5 }}
+            end={{ x: 1, y: 0.5 }}
+            colors={['#AB3CB5', '#4B1A4F']}
+            style={styles.buttonSubmit}
+          >
+            <Text style={{ color: 'white' }}>Submit</Text>
+          </LinearGradient>
+        </Pressable>
+        
+      </View>
     </View>
   );
 }
@@ -186,22 +205,54 @@ export default function TabTwoScreen() {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: 'black',
-    height: '100%',
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'flex-start',
     padding: 20,
+    paddingTop: 40,
+    height: '100%',
+  },
+  title: {
+    color: 'white',
+    textAlign: 'center',
+    fontSize: 24,
+    marginBottom: 20,
+    fontWeight: 'bold',
   },
   item: {
-    color: '#CDCDCD',
+    color: 'white',
     fontSize: 20,
     width: '80%',
+    marginTop: 20,
   },
   itemInfo: {
     color: '#CDCDCD',
     fontSize: 20,
     backgroundColor: '#1C1C1E',
     borderRadius: 15,
-    width: '80%',
+    width: '100%',
+    paddingLeft: 10,
+
+  },
+  error: {
+    color: 'red',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    marginTop: 20,
+  },
+  button: {
+    width: '40%',
+    backgroundColor: '#212121',
+    alignItems: 'center',
+    textAlign: 'center',
+    padding: 10,
+    borderRadius: 20,
+  },
+  buttonSubmit: {
+    width: 130,
+    backgroundColor: '#AB3CB5',
+    alignItems: 'center',
+    textAlign: 'center',
+    padding: 10,
+    borderRadius: 20,
   },
 });

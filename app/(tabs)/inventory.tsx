@@ -26,7 +26,7 @@ export default function Inventory() {
       <Text style={styles.cell}>{item.barcode}</Text>
       <Text style={styles.cell}>{item.name}</Text>
       <Pressable
-        style={styles.button}
+        style={styles.buttonView}
         onPress={() => {
           setSelectedItem(item);
           setModalVisible(true);
@@ -40,46 +40,55 @@ export default function Inventory() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Inventory</Text>
-      <Button title="Refresh Inventory" onPress={fetchInventory} />
-      <FlatList
-        data={inventory}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.barcode}
-        nestedScrollEnabled
-        ListHeaderComponent={() => (
-          <View style={styles.header}>
-            <Text style={styles.headerCellBarcode}>Barcode</Text>
-            <Text style={styles.headerCellName}>Name</Text>
-          </View>
-        )}
-      />
-      {selectedItem && (
-        <ItemInfoModal
-          values={selectedItem}
-          modalVisible={modalVisible}
-          setModalVisible={setModalVisible}
+      <Pressable onPress={fetchInventory} style={styles.button}>
+        <Text style={styles.buttonText}>REFRESH INVENTORY</Text>
+      </Pressable>
+      <View>
+        <FlatList
+          data={inventory}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.barcode}
+          nestedScrollEnabled
+          ListHeaderComponent={() => (
+            <View style={styles.header}>
+              <Text style={styles.headerCellBarcode}>Barcode</Text>
+              <Text style={styles.headerCellName}>Name</Text>
+            </View>
+          )}
         />
-      )}
+        {selectedItem && (
+          <ItemInfoModal
+            values={selectedItem}
+            modalVisible={modalVisible}
+            setModalVisible={setModalVisible}
+          />
+        )}
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: 'black',
+    height: '100%',
+    padding: 20,
+    paddingTop: 40,
     flex: 1,
-    padding: 16,
-    backgroundColor: '#fff',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 16,
     textAlign: 'center',
+    color: 'white',
   },
   header: {
     flexDirection: 'row',
     backgroundColor: '#f1f1f1',
     padding: 8,
+    borderRadius: 5,
+    marginTop: 8,
   },
   headerCellBarcode: {
     fontWeight: 'bold',
@@ -96,15 +105,27 @@ const styles = StyleSheet.create({
     padding: 8,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
+    alignItems: 'center',
   },
   cell: {
     flex: 1,
     textAlign: 'center',
+    color: 'white',
+    justifyContent: 'center',
   },
   button: {
-    backgroundColor: '#2196F3',
+    backgroundColor: '#212121',
     borderRadius: 5,
     padding: 5,
+    textAlign: 'center',
+    justifyContent: 'center',
+  },
+  buttonView: {
+    backgroundColor: '#9835A0',
+    borderRadius: 5,
+    padding: 5,
+    textAlign: 'center',
+    justifyContent: 'center',
   },
   buttonText: {
     color: 'white',

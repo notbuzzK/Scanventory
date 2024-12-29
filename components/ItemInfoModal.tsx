@@ -18,7 +18,7 @@ export const ItemInfoModal = ({ values, modalVisible, setModalVisible }) => {
 
   return (
     <Modal
-      animationType="none"
+      animationType="slide"
       transparent={true}
       visible={modalVisible}
       onRequestClose={() => {
@@ -26,18 +26,35 @@ export const ItemInfoModal = ({ values, modalVisible, setModalVisible }) => {
         setModalVisible(!modalVisible);
       }}
     >
+      <View style={styles.overlay}>
       <View style={styles.centeredView}>
-        <Text>Item Info</Text>
         <View style={styles.modalView}>
-          <Text style={styles.modalText}>{values.barcode}</Text>
-          <Text style={styles.modalText}>{values.name}</Text>
-          <Text style={styles.modalText}>{values.description}</Text>
-          <Text style={styles.modalText}>{values.quantity}</Text>
-          <Text style={styles.modalText}>{values.type}</Text>
+        <Text style={styles.title}>Item Info</Text>
+          <View style={styles.modalLine}>
+            <Text style={styles.itemName}>Barcode:</Text>
+            <Text style={styles.itemInfo}>{values.barcode}</Text>
+          </View>
+          <View style={styles.modalLine}>
+            <Text style={styles.itemName}>Name:</Text>
+            <Text style={styles.itemInfo}>{values.name}</Text>
+          </View>
+          <View style={styles.modalLine}>
+            <Text style={styles.itemName}>Description:</Text>
+            <Text style={styles.itemInfo}>{values.description}</Text>
+          </View>
+          <View style={styles.modalLine}>
+            <Text style={styles.itemName}>Quantity:</Text>
+            <Text style={styles.itemInfo}>{values.quantity}</Text>
+          </View>
+          <View style={styles.modalLine}>
+            <Text style={styles.itemName}>Type:</Text>
+            <Text style={styles.itemInfo}>{values.type}</Text>
+          </View>
+
         </View>
         <View>
           <Pressable
-            style={[styles.button, styles.buttonClose]}
+            style={[styles.buttonEdit]}
             onPress={() => {
               setModalVisible(!modalVisible);
               router.push(`/create?barcode=${values.barcode}`);
@@ -46,24 +63,27 @@ export const ItemInfoModal = ({ values, modalVisible, setModalVisible }) => {
             <Text style={styles.textStyle}>EDIT ITEM</Text>
           </Pressable>
           <Pressable
-            style={[styles.button, styles.buttonClose]}
+            style={[styles.buttonDelete]}
             onPress={() => [setModalVisible(!modalVisible), handleDelete()]}
           >
             <Text style={styles.textStyle}>DELETE</Text>
           </Pressable>
-          <Pressable
-            style={[styles.button, styles.buttonClose]}
-            onPress={() => setModalVisible(!modalVisible)}
-          >
+          <Pressable onPress={() => setModalVisible(!modalVisible)}
+            style={[styles.buttonClose]}>
             <Text style={styles.textStyle}>CLOSE</Text>
           </Pressable>
         </View>
+      </View>
       </View>
     </Modal>
   );
 };
 
 const styles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.8)', // Semi-transparent background
+  },
   centeredView: {
     flex: 1,
     justifyContent: 'center',
@@ -71,9 +91,10 @@ const styles = StyleSheet.create({
   },
   modalView: {
     margin: 20,
-    backgroundColor: 'white',
+    backgroundColor: '#1C1C1E',
     borderRadius: 20,
     padding: 35,
+    width: '80%',
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
@@ -84,21 +105,48 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
-  button: {
-    borderRadius: 20,
-    padding: 10,
-    elevation: 2,
+  title: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  modalLine: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  itemName: {
+    color: 'white',
+    fontSize: 16,
+  },
+  itemInfo: {
+    color: '#AB3CB5',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  buttonEdit: {
+    backgroundColor: '#AB3CB5',
+    marginBottom: 10,
+    width: 275,
+    borderRadius: 20,      
+  },
+  buttonDelete: {
+    backgroundColor: 'red',
+    marginBottom: 10,
+    width: 275,
+    borderRadius: 20,    
   },
   buttonClose: {
-    backgroundColor: '#2196F3',
+    backgroundColor: '#212121',
+    marginBottom: 10,
+      width: 275,
+      borderRadius: 20,
   },
   textStyle: {
     color: 'white',
     fontWeight: 'bold',
     textAlign: 'center',
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: 'center',
+    padding: 10,
   },
 });

@@ -15,6 +15,7 @@ import { useState, useEffect } from "react";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { checkBarcodeStatus } from "@/database/db";
 import { useRouter } from "expo-router";
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function Home() {
   const [permission, requestPermission] = useCameraPermissions();
@@ -49,7 +50,7 @@ export default function Home() {
   const BarcodeFoundModal = () => {
     return (
       <Modal
-        animationType="none"
+        animationType="slide"
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => {
@@ -57,24 +58,28 @@ export default function Home() {
           setModalVisible(!modalVisible);
         }}
       >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalText}>Barcode found!</Text>
-          </View>
-          <View>
-            <Pressable
-                style={[styles.button, styles.buttonClose]}
-                onPress={() => {
-                  setModalVisible(!modalVisible);
-                  router.push(`/create?barcode=${barcode}`);
-                }}>
-                <Text style={styles.textStyle}>EDIT ITEM</Text>
+        <View style={styles.overlay}>
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Text style={styles.modalText}>FOUND EXISTING RECORDS</Text>
+            </View>
+            <View>
+              <Pressable
+                onPress={() => router.push(`/create?barcode=${barcode}`)}>
+                <LinearGradient
+                  start={{ x: 0, y: 0.5 }}
+                  end={{ x: 1, y: 0.5 }}
+                  colors={['#AB3CB5', '#4B1A4F']}
+                  style={styles.button}>
+                  <Text style={styles.textStyle}>VIEW ITEM</Text>
+                </LinearGradient>
               </Pressable>
-            <Pressable
-                style={[styles.button, styles.buttonClose]}
+              <Pressable
+                style={[styles.buttonCancel]}
                 onPress={() => setModalVisible(!modalVisible)}>
                 <Text style={styles.textStyle}>CLOSE</Text>
               </Pressable>
+            </View>
           </View>
         </View>
       </Modal>
@@ -84,7 +89,7 @@ export default function Home() {
   const BarcodeNotFoundModal = () => {
     return (
       <Modal
-        animationType="none"
+        animationType="slide"
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => {
@@ -92,24 +97,31 @@ export default function Home() {
           setModalVisible(!modalVisible);
         }}
       >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalText}>Barcode not found</Text>
-          </View>
-          <View>
-            <Pressable
-                style={[styles.button, styles.buttonClose]}
+        <View style={styles.overlay}>
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Text style={styles.modalText}>NO RECORDS FOUND</Text>
+            </View>
+            <View>
+              <Pressable
                 onPress={() => {
                   setModalVisible(!modalVisible);
                   router.push(`/create?barcode=${barcode}`);
                 }}>
-                <Text style={styles.textStyle}>ADD AS NEW ITEM</Text>
+                <LinearGradient
+                  start={{ x: 0, y: 0.5 }}
+                  end={{ x: 1, y: 0.5 }}
+                  colors={['#AB3CB5', '#4B1A4F']}
+                  style={styles.button}>
+                  <Text style={styles.textStyle}>ADD AS NEW A ITEM</Text>
+                </LinearGradient>
               </Pressable>
-            <Pressable
-                style={[styles.button, styles.buttonClose]}
-                onPress={() => setModalVisible(!modalVisible)}>
-                <Text style={styles.textStyle}>CANCEL</Text>
-              </Pressable>
+              <Pressable
+                  style={[styles.buttonCancel]}
+                  onPress={() => setModalVisible(!modalVisible)}>
+                  <Text style={styles.textStyle}>CANCEL</Text>
+                </Pressable>
+            </View>
           </View>
         </View>
       </Modal>
@@ -192,9 +204,10 @@ const styles = StyleSheet.create({
   },
   modalView: {
     margin: 20,
-    backgroundColor: 'white',
+    backgroundColor: '#1C1C1E',
     borderRadius: 20,
     padding: 35,
+    justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
@@ -204,11 +217,24 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+    width: '80%',
+    height: '40%',
   },
   button: {
     borderRadius: 20,
     padding: 10,
+    margin: 10,
     elevation: 2,
+    width: 285,
+    justifyContent: 'center',
+  },
+  buttonCancel: {
+    borderRadius: 20,
+    padding: 10,
+    margin: 10,
+    elevation: 2,
+    width: '80%',
+    backgroundColor: '#212121',
   },
   buttonOpen: {
     backgroundColor: '#F194FF',
@@ -220,13 +246,20 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
     textAlign: 'center',
+    fontSize: 20,
   },
   modalText: {
     marginBottom: 15,
     textAlign: 'center',
+    fontSize: 50,
+    color: 'white',
   },
   message: {
     textAlign: 'center',
     paddingBottom: 10,
+  },
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.8)', // Semi-transparent background
   },
 });

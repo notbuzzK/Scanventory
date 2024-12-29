@@ -26,34 +26,38 @@ export default function TabLayout() {
             // Use a transparent background on iOS to show the blur effect
             position: 'absolute',
           },
-          default: {},
+          default: {
+            backgroundColor: 'black',
+            borderTopWidth: 1,
+            borderColor: '#1C1C1E',
+          },
         }),
       }}>
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Scan',
+          title: 'SCAN',
           tabBarIcon: ({ color }) => <Camera name="camera" size={24} color={color} />,
         }}
       />
       <Tabs.Screen
         name="create"
         options={{
-          title: 'Create',
+          title: 'CREATE',
           tabBarIcon: ({ color }) => <BarCode name="barcode" size={24} color={color} />,
         }}
       />
       <Tabs.Screen
         name="inventory"
         options={{
-          title: 'Inventory',
+          title: 'INVENTORY',
           tabBarIcon: ({ color }) => <Inventory name="inventory" size={24} color={color} />
         }}
       />
       <Tabs.Screen
         name="statistics"
         options={{
-          title: 'Statistics',
+          title: 'STATISTICS',
           tabBarIcon: ({ color }) => <Stats name="linechart" size={24} color={color} />,
         }}
       />
