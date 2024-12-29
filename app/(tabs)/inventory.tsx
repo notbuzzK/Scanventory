@@ -160,6 +160,7 @@ const styles = StyleSheet.create({
   },
   searchBar: {
     flexDirection: 'row',
+    justifyContent: 'space-around',
     marginBottom: 10,
   },
   input: {

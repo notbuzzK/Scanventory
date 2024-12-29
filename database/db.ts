@@ -146,3 +146,15 @@ export const getAllLowQuantityItemsAmount = async () => {
     return 0;
   }
 }
+
+export const getItemDistribution = async () => {
+  try {
+    const allRows = await db.getAllAsync(`
+      SELECT type, COUNT(*) as total FROM inventory GROUP BY type;
+    `);
+    return allRows;
+  } catch (error) {
+    console.error("Error getting item distribution:", error);
+    return [];
+  }
+}

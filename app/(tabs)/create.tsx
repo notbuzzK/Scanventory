@@ -213,14 +213,12 @@ const styles = StyleSheet.create({
     color: 'white',
     textAlign: 'center',
     fontSize: 24,
-    marginBottom: 20,
     fontWeight: 'bold',
   },
   item: {
     color: 'white',
     fontSize: 20,
     width: '80%',
-    marginTop: 20,
   },
   itemInfo: {
     color: '#CDCDCD',
@@ -229,6 +227,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     width: '100%',
     paddingLeft: 10,
+    marginBottom: 20,
   },
   error: {
     color: 'red',

@@ -24,7 +24,8 @@ export default function Home() {
   const [scanned, setScanned] = useState(false);
   const [barcode, setBarcode] = useState('');
   const [modalType, setModalType] = useState<"found" | "notFound" | undefined>(undefined);
-  const [flash, setFlash] = useState('off');
+  const [flash, setFlash] = useState(false);
+  
   const router = useRouter();
 
   useEffect(() => {
@@ -162,17 +163,21 @@ export default function Home() {
       <CameraView
         style={styles.camera}
         facing="back"
+        enableTorch={flash}
         onBarcodeScanned={(barcode) => {
           scanned ? undefined : handleBarcode(barcode.data);}}
       />
 
-      {/* FLASH BUTTON 
       <View>
-        <Pressable>
-          <Ionicons name="flash" size={24} color="black" />
+        <Text style={styles.title}>scan for an item</Text>
+      </View>
+
+      <View style={styles.flashButton}>
+        <Pressable
+          onPress={() => setFlash(!flash)}>
+          <Ionicons name="flash" color="white" style={[styles.buttonStyle , flash && styles.flashActive]}/>
         </Pressable>
       </View>
-      */}
       
       {modalType === "found" && <BarcodeFoundModal />}
       {modalType === "notFound" && <BarcodeNotFoundModal />}
@@ -189,13 +194,32 @@ const styles = StyleSheet.create({
     paddingVertical: 80,
   },
   title: {
+    textAlign: "center",
     color: "white",
     fontSize: 40,
+    fontWeight: "bold",
+    marginTop: 40,
+  },
+  flashButton: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
   },
   buttonStyle: {
-    color: "#0E7AFE",
-    fontSize: 20,
+    position: "absolute",
+    bottom: 20,
+    right: 20,
+    backgroundColor: "#212121",
+    borderRadius: 50,
+    padding: 10,
+    margin: 10,
+    elevation: 2,
+    width: 50,
+    fontSize: 30,
     textAlign: "center",
+  },
+  flashActive: {
+    backgroundColor: '#9835A0',
   },
   camera: {
     width: "100%",
