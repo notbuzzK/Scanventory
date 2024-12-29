@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { getAllInventory } from "@/database/db";
-import { View, Text, StyleSheet, Button, FlatList, Pressable } from "react-native";
+import { View, Text, StyleSheet, Button, FlatList, Pressable, TextInput } from "react-native";
 import { ItemInfoModal } from '@/components/ItemInfoModal';
+import Foundation from '@expo/vector-icons/Foundation';
+import { getSearchItems } from '@/database/db';
 
 export default function Inventory() {
   const [inventory, setInventory] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
 
   const fetchInventory = async () => {
     try {
@@ -17,9 +21,18 @@ export default function Inventory() {
     }
   };
 
+  const handleSearch = async () => {
+    try {
+      const result = await getSearchItems(searchTerm);
+      setSearchResults(result);
+    } catch (error) {
+      console.error("Error getting search items:", error);
+    }
+
   useEffect(() => {
     fetchInventory();
   }, []);
+}
 
   const renderItem = ({ item }) => (
     <View style={styles.row}>
@@ -40,19 +53,31 @@ export default function Inventory() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Inventory</Text>
-      <Pressable onPress={fetchInventory} style={styles.button}>
-        <Text style={styles.buttonText}>REFRESH INVENTORY</Text>
-      </Pressable>
-      <View>
+      <View style={styles.searchBar}>
+        
+        <TextInput 
+          style={styles.input} placeholder="Search"
+          value={searchTerm} onChangeText={(text) => setSearchTerm(text)}/>
+        <Pressable
+          style={styles.button}
+          onPress={handleSearch}>
+          <Text style={styles.buttonText}>SEARCH</Text>
+        </Pressable>
+      </View>
+      <View style={styles.tableContainer}>
         <FlatList
-          data={inventory}
+          data={searchTerm ? searchResults : inventory}
           renderItem={renderItem}
           keyExtractor={(item) => item.barcode}
           nestedScrollEnabled
+          contentContainerStyle={{ flexGrow: 1, }}
           ListHeaderComponent={() => (
             <View style={styles.header}>
               <Text style={styles.headerCellBarcode}>Barcode</Text>
               <Text style={styles.headerCellName}>Name</Text>
+              <Pressable onPress={fetchInventory} style={styles.refresh}>
+                <Foundation name="refresh" size={18} color="black" />
+              </Pressable>
             </View>
           )}
         />
@@ -119,6 +144,7 @@ const styles = StyleSheet.create({
     padding: 5,
     textAlign: 'center',
     justifyContent: 'center',
+    width: '25%',
   },
   buttonView: {
     backgroundColor: '#9835A0',
@@ -131,5 +157,27 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+  searchBar: {
+    flexDirection: 'row',
+    marginBottom: 10,
+  },
+  input: {
+    color: 'white',
+    fontSize: 20,
+    backgroundColor: '#1C1C1E',
+    borderRadius: 5,
+    width: '73%',
+    paddingLeft: 10,
+    marginRight: 5,
+  },
+  refresh: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '10%',
+    marginLeft: 10,
+  },
+  tableContainer: {
+    marginBottom: 90,
   },
 });

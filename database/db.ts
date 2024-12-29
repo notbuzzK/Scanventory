@@ -110,3 +110,39 @@ export const getAllTypes = async () => {
     return [];
   }
 };
+
+export const getSearchItems = async (searchTerm: string) => {
+  try {
+    const allRows = await db.getAllAsync(`
+      SELECT * FROM inventory WHERE name LIKE ? OR description LIKE ? OR type LIKE ?;
+    `, [`%${searchTerm}%`, `%${searchTerm}%`, `%${searchTerm}%`]);
+    return allRows;
+  } catch (error) {
+    console.error("Error getting search items:", error);
+    return [];
+  }
+};
+
+export const getAllLowQuantityItems = async () => {
+  try {
+    const allRows = await db.getAllAsync(`
+      SELECT * FROM inventory WHERE quantity <= 10;
+    `);
+    return allRows;
+  } catch (error) {
+    console.error("Error getting low quantity items:", error);
+    return [];
+  }
+};
+
+export const getAllLowQuantityItemsAmount = async () => {
+  try {
+    const allRows = await db.getAllAsync(`
+      SELECT COUNT(*) as total FROM inventory WHERE quantity <= 10;
+    `);
+    return allRows[0].total;
+  } catch (error) {
+    console.error("Error getting low quantity items:", error);
+    return 0;
+  }
+}

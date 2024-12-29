@@ -229,7 +229,6 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     width: '100%',
     paddingLeft: 10,
-
   },
   error: {
     color: 'red',

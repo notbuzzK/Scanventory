@@ -16,6 +16,7 @@ import { CameraView, useCameraPermissions } from "expo-camera";
 import { checkBarcodeStatus } from "@/database/db";
 import { useRouter } from "expo-router";
 import { LinearGradient } from 'expo-linear-gradient';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 export default function Home() {
   const [permission, requestPermission] = useCameraPermissions();
@@ -23,6 +24,7 @@ export default function Home() {
   const [scanned, setScanned] = useState(false);
   const [barcode, setBarcode] = useState('');
   const [modalType, setModalType] = useState<"found" | "notFound" | undefined>(undefined);
+  const [flash, setFlash] = useState('off');
   const router = useRouter();
 
   useEffect(() => {
@@ -164,6 +166,13 @@ export default function Home() {
           scanned ? undefined : handleBarcode(barcode.data);}}
       />
 
+      {/* FLASH BUTTON 
+      <View>
+        <Pressable>
+          <Ionicons name="flash" size={24} color="black" />
+        </Pressable>
+      </View>
+      */}
       
       {modalType === "found" && <BarcodeFoundModal />}
       {modalType === "notFound" && <BarcodeNotFoundModal />}
