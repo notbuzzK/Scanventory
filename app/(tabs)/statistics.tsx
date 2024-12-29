@@ -93,7 +93,7 @@ export default function Statistics() {
         </View>
         <View style={style.totalItems}>
           <Pressable
-            onPress={() => [setModalVisible(true), console.log("pressed")]}
+            onPress={() => [setModalVisible(true)]}
           >
             <AntDesign name="right" size={36} color="white" style={style.rightIcon}/>
           </Pressable>

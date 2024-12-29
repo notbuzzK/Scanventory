@@ -76,7 +76,7 @@ export default function Inventory() {
               <Text style={styles.headerCellBarcode}>Barcode</Text>
               <Text style={styles.headerCellName}>Name</Text>
               <Pressable onPress={fetchInventory} style={styles.refresh}>
-                <Foundation name="refresh" size={18} color="black" />
+                <Foundation name="refresh" size={18} color="white" />
               </Pressable>
             </View>
           )}
@@ -114,16 +114,19 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 5,
     marginTop: 8,
+    alignItems: 'center',
   },
   headerCellBarcode: {
     fontWeight: 'bold',
     textAlign: 'center',
     width: '45%',
+    fontSize: 16,
   },
   headerCellName: {
     fontWeight: 'bold',
     textAlign: 'center',
     width: '40%',
+    fontSize: 16,
   },
   row: {
     flexDirection: 'row',
@@ -177,6 +180,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: '10%',
     marginLeft: 10,
+    backgroundColor: '#1C1C1E',
+    borderRadius: 20,
+    padding: 5,
   },
   tableContainer: {
     marginBottom: 90,
